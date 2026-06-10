@@ -523,12 +523,13 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     }
 
     private fun makeFilePickerIntent(slot: FileSlot): Intent =
-        FileUtils.makeImagePickerIntent().apply {
+        FileUtils.makeFilePickerIntent().apply {
             // Single-select for SlotCount.ONE, multi-select otherwise.
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, slot.count == SlotCount.MANY)
-            // Sidecars are not images.
+            // Sidecars (.xmp etc.) aren't media and won't match the media
+            // allowlist, so drop it and show every file for those slots.
             if (slot.key.role == SlotRole.SIDECAR) {
-                type = "*/*"
+                removeExtra(Intent.EXTRA_MIME_TYPES)
             }
         }
 
